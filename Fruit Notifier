@@ -1,0 +1,41 @@
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
+
+local notified = false
+local currentFruit = nil
+
+local function sendFruitNotification(distance)
+    StarterGui:SetCore("SendNotification", {
+        Title = "A Blox Fruit has spawned!",
+        Text = distance .. "m away from you",
+        Duration = 10
+    })
+end
+
+RunService.RenderStepped:Connect(function()
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        return
+    end
+
+    for _, obj in ipairs(Workspace:GetChildren()) do
+        if obj:IsA("Model") and obj:FindFirstChild("Handle") and obj.Name:lower():find("fruit") then
+            if not notified or obj ~= currentFruit then
+                currentFruit = obj
+                notified = true
+
+                local distance = math.floor(
+                    (LocalPlayer.Character.HumanoidRootPart.Position - obj.Handle.Position).Magnitude
+                )
+                sendFruitNotification(distance)
+            end
+        end
+    end
+
+    if currentFruit and not currentFruit:IsDescendantOf(Workspace) then
+        notified = false
+        currentFruit = nil
+    end
+end)
