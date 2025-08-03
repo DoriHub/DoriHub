@@ -47,12 +47,12 @@ local reachOn = false
 
 task.spawn(function()
 	while true do
-		task.wait(0.2)
+		task.wait(0.1)
 		if speedOn then
 			local tool = player.Backpack:FindFirstChild("Speed Coil") or character:FindFirstChild("Speed Coil")
 			if tool then
 				tool.Parent = character
-				task.wait(0.1)
+				task.wait(0.05)
 				tool.Parent = player.Backpack
 			end
 		end
@@ -66,7 +66,7 @@ task.spawn(function()
 			for _, brainrot in pairs(workspace:GetDescendants()) do
 				if brainrot:IsA("BasePart") and brainrot.Name:lower():find("brain") then
 					local mag = (hrp.Position - brainrot.Position).Magnitude
-					if mag < 25 then
+					if mag < 35 then
 						firetouchinterest(hrp, brainrot, 0)
 						firetouchinterest(hrp, brainrot, 1)
 					end
