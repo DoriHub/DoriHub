@@ -1,10 +1,10 @@
 local Players = game:GetService("Players")
-local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local player = Players.LocalPlayer
-local char = player.Character or player.CharacterAdded:Wait()
-local hrp = char:WaitForChild("HumanoidRootPart")
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
 
 local gui = Instance.new("ScreenGui", game.CoreGui)
 gui.ResetOnSpawn = false
@@ -19,7 +19,7 @@ frame.Draggable = true
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 25)
 title.BackgroundTransparency = 1
-title.Text = "Steal A Brainrot Hack"
+title.Text = "Brainrot Script"
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 14
@@ -33,33 +33,46 @@ speedBtn.TextColor3 = Color3.new(1, 1, 1)
 speedBtn.Font = Enum.Font.Gotham
 speedBtn.TextSize = 14
 
-local noclipBtn = Instance.new("TextButton", frame)
-noclipBtn.Position = UDim2.new(0, 20, 0, 80)
-noclipBtn.Size = UDim2.new(0, 160, 0, 30)
-noclipBtn.Text = "Noclip: OFF"
-noclipBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-noclipBtn.TextColor3 = Color3.new(1, 1, 1)
-noclipBtn.Font = Enum.Font.Gotham
-noclipBtn.TextSize = 14
+local reachBtn = Instance.new("TextButton", frame)
+reachBtn.Position = UDim2.new(0, 20, 0, 80)
+reachBtn.Size = UDim2.new(0, 160, 0, 30)
+reachBtn.Text = "Long Reach: OFF"
+reachBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+reachBtn.TextColor3 = Color3.new(1, 1, 1)
+reachBtn.Font = Enum.Font.Gotham
+reachBtn.TextSize = 14
 
 local speedOn = false
-local noclipOn = false
-local speedValue = 3
+local reachOn = false
 
-local moveVector = Vector3.zero
-
-UIS.InputBegan:Connect(function(input, gameProcessed)
-	if gameProcessed then return end
-	if input.KeyCode == Enum.KeyCode.W then moveVector = Vector3.new(0,0,-1)
-	elseif input.KeyCode == Enum.KeyCode.S then moveVector = Vector3.new(0,0,1)
-	elseif input.KeyCode == Enum.KeyCode.A then moveVector = Vector3.new(-1,0,0)
-	elseif input.KeyCode == Enum.KeyCode.D then moveVector = Vector3.new(1,0,0)
+task.spawn(function()
+	while true do
+		task.wait(0.2)
+		if speedOn then
+			local tool = player.Backpack:FindFirstChild("Speed Coil") or character:FindFirstChild("Speed Coil")
+			if tool then
+				tool.Parent = character
+				task.wait(0.1)
+				tool.Parent = player.Backpack
+			end
+		end
 	end
 end)
 
-UIS.InputEnded:Connect(function(input)
-	if input.KeyCode == Enum.KeyCode.W or input.KeyCode == Enum.KeyCode.S or input.KeyCode == Enum.KeyCode.A or input.KeyCode == Enum.KeyCode.D then
-		moveVector = Vector3.zero
+task.spawn(function()
+	while true do
+		task.wait(0.1)
+		if reachOn then
+			for _, brainrot in pairs(workspace:GetDescendants()) do
+				if brainrot:IsA("BasePart") and brainrot.Name:lower():find("brain") then
+					local mag = (hrp.Position - brainrot.Position).Magnitude
+					if mag < 25 then
+						firetouchinterest(hrp, brainrot, 0)
+						firetouchinterest(hrp, brainrot, 1)
+					end
+				end
+			end
+		end
 	end
 end)
 
@@ -68,25 +81,7 @@ speedBtn.MouseButton1Click:Connect(function()
 	speedBtn.Text = "Speed: " .. (speedOn and "ON" or "OFF")
 end)
 
-noclipBtn.MouseButton1Click:Connect(function()
-	noclipOn = not noclipOn
-	noclipBtn.Text = "Noclip: " .. (noclipOn and "ON" or "OFF")
-end)
-
-RunService.RenderStepped:Connect(function()
-	if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-
-	if speedOn and moveVector.Magnitude > 0 then
-		local cf = hrp.CFrame
-		local dir = cf:VectorToWorldSpace(moveVector)
-		hrp.CFrame = cf + dir.Unit * speedValue
-	end
-
-	if noclipOn then
-		for _, part in ipairs(char:GetDescendants()) do
-			if part:IsA("BasePart") then
-				part.CanCollide = false
-			end
-		end
-	end
+reachBtn.MouseButton1Click:Connect(function()
+	reachOn = not reachOn
+	reachBtn.Text = "Long Reach: " .. (reachOn and "ON" or "OFF")
 end)
